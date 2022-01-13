@@ -1,0 +1,71 @@
+<!-- This file specifies a spotbugs filter for excluding reports that
+     should not be considered errors.
+     The format of this file is documented at:
+       https://spotbugs.readthedocs.io/en/latest/filter.html
+     When possible, please specify the full names of the bug codes,
+     using the pattern attribute, to make it clearer what reports are
+     being suppressed.  You can find a listing of codes at:
+       https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html
+  -->
+
+<FindBugsFilter>
+
+  <!-- Ignore spotbugs reports from incomplete detectors -->
+  <Match>
+    <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+  </Match>
+
+  <!-- We don't mind having redundant checks for null, it is more error prone to later changes -->
+  <Match>
+    <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
+  </Match>
+
+  EQ_UNUSUAL
+
+  <Match>
+    <Bug pattern="EQ_UNUSUAL"/>
+  </Match>
+
+
+  <!-- Ignore negating result of compareTo -->
+  <Match>
+    <Bug pattern="RV_NEGATING_RESULT_OF_COMPARETO"/>
+  </Match>
+
+  <Match>
+    <Bug pattern="EQ_DOESNT_OVERRIDE_EQUALS"/>
+  </Match>
+  <!-- Ignore system exit  -->
+  <Match>
+    <Bug pattern=" DM_EXIT"/>
+  </Match>
+
+  <!-- Ignore unread public and protected fields as someone may depend on Undertow and use them in their app -->
+  <Match>
+    <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+  </Match>
+
+  <!-- Ignore returning references to internal representations of objects -->
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP"/>
+  </Match>
+
+  <!-- Ignore returning references to internal representations of objects -->
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP2"/>
+  </Match>
+
+  <Match>
+    <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
+  </Match>
+
+  <Match>
+    <Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT"/>
+  </Match>
+
+  <Match>
+    <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+    <Class name="com.ericsson.acs.integration.rest.clients.SolutionResourceClient"/>
+    <Method name="getAndAddHeaders"/>
+  </Match>
+</FindBugsFilter>

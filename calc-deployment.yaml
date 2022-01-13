@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: calc
+  name: calc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: calc
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        io.kompose.network/network1: "true"
+        io.kompose.service: calc
+    spec:
+      containers:
+      - image: calc:latest
+        imagePullPolicy: "Never"
+        name: calc
+        ports:
+        - containerPort: 8080
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+status: {}
+---
+#apiVersion: extensions/v1beta1
+#kind: NetworkPolicy
+#metadata:
+#  creationTimestamp: null
+#  name: network1
+#spec:
+#  ingress:
+#    - from:
+#        - podSelector:
+#            matchLabels:
+#              io.kompose.network/network1: "true"
+#  podSelector:
+#    matchLabels:
+#      io.kompose.network/network1: "true"
+#---
+kind: Service
+apiVersion: v1
+metadata:
+  name: calc
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    io.kompose.service: calc
+  type: LoadBalancer

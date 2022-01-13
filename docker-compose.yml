@@ -1,0 +1,49 @@
+version: '3.5'
+services:
+#  calc:
+  #    build:
+  #   context: ./
+  #   dockerfile: Dockerfile
+  # image: calc
+  # links:
+  #   - postgres
+  #   - rabbitmq
+  # environment:
+  #   - MYAPP_JDBC_URL=jdbc:postgresql://postgres:5432/postgres
+  #   - MYAPP_RABBIT_URL= rabbitmq
+  # ports:
+  #   - "8080:8080"
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: 'rabbitmq_calc'
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  postgres:
+    container_name: postgres_container
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: always
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    restart: always
+
+volumes:
+  postgres:
+  pgadmin:

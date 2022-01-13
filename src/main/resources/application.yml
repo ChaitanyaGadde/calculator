@@ -1,0 +1,98 @@
+spring:
+  application:
+    name: calc
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+  profiles:
+    active: local
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+  datasource:
+    url: ${MYAPP_JDBC_URL:jdbc:postgresql://localhost:5432/postgres}
+    username: postgres
+    password: password
+    hikari:
+      maximum-pool-size: 5
+      connection-timeout: 20000
+  rabbitmq:
+    host: ${MYAPP_RABBIT_URL:localhost}
+    port: 5672
+    virtualHost: /
+    password: ${RABBIT_PASS:guest}
+    username: ${RABBITMQ_USERNAME:guest}
+    listener.simple.retry.enabled: true
+    listener.simple.retry.initial-interval: 3s
+    listener.simple.retry.max-attempts: 3
+    listener.simple.retry.max-interval: 10s
+    listener.simple.retry.multiplier: 2
+    listener.simple.missing-queues-fatal: true
+    listener.simple.auto-startup: true
+    requested-heartbeat: 50
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
+
+logging:
+  pattern:
+    level: "%5p %X{projectCode} %X{configCode}"
+  level:
+    root: info
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+
+server:
+  port: ${RULE_ENGINE_WRAPPER_ENDPOINT_PORT:8080}
+
+#Prometheus Monitoring
+management:
+  endpoints:
+    web:
+      base-path: /
+      path-mapping:
+        prometheus: metrics
+      exposure:
+        exclude: metrics
+        include: prometheus,health,mappings,info
+    endpoint:
+      metrics:
+        enabled: true
+      prometheus:
+        enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+  #app values create the env
+  #variable and story for exposing env variables @TODO
+app:
+  header:
+    x-internal-client: tax-calc-api-client
+    x-client: iAmClientForTaxCalc
+  api-endpoint-version:
+    version-one: v1
+  env:
+    webclient-timeout-millis: 5000
+    x-internal-client: tax-calc-api
+  rest-client:
+    holidays-core-path: /re-api/execute
+    port: ${holiday_port:}
+    host: ${holiday_host:}
+    swvp: /v1/google-holiday-host
+  rabbit:
+    topic:
+      exchange: calc-exchange
+    dlq:
+      exchange: dlq-exchange
+      routing-key: data-dlq
+    car-data:
+      routing-key: event.car.movememt
+      create-event-queue: car.movement.notification.queue.${random.long[100000,90000000000]}
